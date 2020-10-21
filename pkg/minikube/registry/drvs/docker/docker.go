@@ -63,7 +63,7 @@ func configure(cc config.ClusterConfig, n config.Node) (interface{}, error) {
 	extraArgs := []string{}
 
 	for _, port := range cc.ExposedPorts {
-		extraArgs = append(extraArgs, "-p", port)
+		extraArgs = append(extraArgs, "-p", port, ":", port)
 	}
 
 	return kic.NewDriver(kic.Config{
