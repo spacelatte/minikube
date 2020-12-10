@@ -21,13 +21,16 @@ import (
 	"fmt"
 
 	"k8s.io/klog/v2"
+	"k8s.io/minikube/pkg/trace"
 )
 
+// If you add a new step here, please also add it to register.Reg registry inside the init() function
 const (
 	InitialSetup         RegStep = "Initial Minikube Setup"
 	SelectingDriver      RegStep = "Selecting Driver"
 	DownloadingArtifacts RegStep = "Downloading Artifacts"
 	StartingNode         RegStep = "Starting Node"
+	PullingBaseImage     RegStep = "Pulling Base Image"
 	RunningLocalhost     RegStep = "Running on Localhost"
 	LocalOSRelease       RegStep = "Local OS Release"
 	CreatingContainer    RegStep = "Creating Container"
@@ -39,6 +42,7 @@ const (
 	Done                 RegStep = "Done"
 
 	Stopping  RegStep = "Stopping"
+	PowerOff  RegStep = "PowerOff"
 	Deleting  RegStep = "Deleting"
 	Pausing   RegStep = "Pausing"
 	Unpausing RegStep = "Unpausing"
@@ -67,6 +71,7 @@ func init() {
 				SelectingDriver,
 				DownloadingArtifacts,
 				StartingNode,
+				PullingBaseImage,
 				RunningLocalhost,
 				LocalOSRelease,
 				CreatingContainer,
@@ -78,7 +83,7 @@ func init() {
 				Done,
 			},
 
-			Stopping:  {Stopping, Done},
+			Stopping:  {Stopping, PowerOff, Done},
 			Pausing:   {Pausing, Done},
 			Unpausing: {Unpausing, Done},
 			Deleting:  {Deleting, Stopping, Deleting, Done},
@@ -115,6 +120,7 @@ func (r *Register) currentStep() string {
 
 // SetStep sets the current step
 func (r *Register) SetStep(s RegStep) {
+	defer trace.StartSpan(string(s))
 	if r.first == RegStep("") {
 		_, ok := r.steps[s]
 		if ok {
@@ -122,9 +128,9 @@ func (r *Register) SetStep(s RegStep) {
 		} else {
 			klog.Errorf("unexpected first step: %q", r.first)
 		}
+	} else {
+		trace.EndSpan(string(r.current))
 	}
 
 	r.current = s
 }
-
-// recordStep records the current step

@@ -88,6 +88,7 @@ func TestFunctional(t *testing.T) {
 			{"CacheCmd", validateCacheCmd},                  // Caches images needed for subsequent tests because of proxy
 			{"MinikubeKubectlCmd", validateMinikubeKubectl}, // Make sure `minikube kubectl` works
 			{"MinikubeKubectlCmdDirectly", validateMinikubeKubectlDirectCall},
+			{"ExtraConfig", validateExtraConfig}, // Ensure extra cmdline config change is saved
 		}
 		for _, tc := range tests {
 			tc := tc
@@ -328,10 +329,36 @@ func validateMinikubeKubectlDirectCall(ctx context.Context, t *testing.T, profil
 	}
 	defer os.Remove(dstfn) // clean up
 
-	kubectlArgs := []string{"get", "pods"}
+	kubectlArgs := []string{"--context", profile, "get", "pods"}
 	rr, err := Run(t, exec.CommandContext(ctx, dstfn, kubectlArgs...))
 	if err != nil {
-		t.Fatalf("failed to run kubectl directl. args %q: %v", rr.Command(), err)
+		t.Fatalf("failed to run kubectl directly. args %q: %v", rr.Command(), err)
+	}
+
+}
+
+func validateExtraConfig(ctx context.Context, t *testing.T, profile string) {
+	defer PostMortemLogs(t, profile)
+
+	start := time.Now()
+	// The tests before this already created a profile, starting minikube with different --extra-config cmdline option.
+	startArgs := []string{"start", "-p", profile, "--extra-config=apiserver.enable-admission-plugins=NamespaceAutoProvision"}
+	c := exec.CommandContext(ctx, Target(), startArgs...)
+	rr, err := Run(t, c)
+	if err != nil {
+		t.Errorf("failed to restart minikube. args %q: %v", rr.Command(), err)
+	}
+	t.Logf("restart took %s for %q cluster.", time.Since(start), profile)
+
+	afterCfg, err := config.LoadProfile(profile)
+	if err != nil {
+		t.Errorf("error reading cluster config after soft start: %v", err)
+	}
+
+	expectedExtraOptions := "apiserver.enable-admission-plugins=NamespaceAutoProvision"
+
+	if !strings.Contains(afterCfg.Config.KubernetesConfig.ExtraOptions.String(), expectedExtraOptions) {
+		t.Errorf("expected ExtraOptions to contain %s but got %s", expectedExtraOptions, afterCfg.Config.KubernetesConfig.ExtraOptions.String())
 	}
 
 }
@@ -731,7 +758,9 @@ func validateServiceCmd(ctx context.Context, t *testing.T, profile string) {
 	defer func() {
 		if t.Failed() {
 			t.Logf("service test failed - dumping debug information")
-
+			t.Logf("-----------------------service failure post-mortem--------------------------------")
+			ctx, cancel := context.WithTimeout(context.Background(), Minutes(2))
+			defer cancel()
 			rr, err := Run(t, exec.CommandContext(ctx, "kubectl", "--context", profile, "describe", "po", "hello-node"))
 			if err != nil {
 				t.Logf("%q failed: %v", rr.Command(), err)
@@ -754,11 +783,11 @@ func validateServiceCmd(ctx context.Context, t *testing.T, profile string) {
 
 	rr, err := Run(t, exec.CommandContext(ctx, "kubectl", "--context", profile, "create", "deployment", "hello-node", "--image=k8s.gcr.io/echoserver:1.4"))
 	if err != nil {
-		t.Logf("%q failed: %v (may not be an error).", rr.Command(), err)
+		t.Fatalf("failed to create hello-node deployment with this command %q: %v.", rr.Command(), err)
 	}
 	rr, err = Run(t, exec.CommandContext(ctx, "kubectl", "--context", profile, "expose", "deployment", "hello-node", "--type=NodePort", "--port=8080"))
 	if err != nil {
-		t.Logf("%q failed: %v (may not be an error)", rr.Command(), err)
+		t.Fatalf("failed to expose hello-node deployment: %q : %v", rr.Command(), err)
 	}
 
 	if _, err := PodWait(ctx, t, profile, "default", "app=hello-node", Minutes(10)); err != nil {

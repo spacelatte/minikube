@@ -27,10 +27,10 @@ import (
 
 const (
 	// DefaultKubernetesVersion is the default Kubernetes version
-	DefaultKubernetesVersion = "v1.19.2"
+	DefaultKubernetesVersion = "v1.20.0"
 	// NewestKubernetesVersion is the newest Kubernetes version to test against
 	// NOTE: You may need to update coreDNS & etcd versions in pkg/minikube/bootstrapper/images/images.go
-	NewestKubernetesVersion = "v1.19.2"
+	NewestKubernetesVersion = "v1.20.0"
 	// OldestKubernetesVersion is the oldest Kubernetes version to test against
 	OldestKubernetesVersion = "v1.13.0"
 	// DefaultClusterName is the default nane for the k8s cluster
@@ -68,6 +68,10 @@ const (
 	MinikubeActiveDockerdEnv = "MINIKUBE_ACTIVE_DOCKERD"
 	// PodmanVarlinkBridgeEnv is used for podman settings
 	PodmanVarlinkBridgeEnv = "PODMAN_VARLINK_BRIDGE"
+	// PodmanContainerHostEnv is used for podman settings
+	PodmanContainerHostEnv = "CONTAINER_HOST"
+	// PodmanContainerSSHKeyEnv is used for podman settings
+	PodmanContainerSSHKeyEnv = "CONTAINER_SSHKEY"
 	// MinikubeActivePodmanEnv holds the podman service that the user's shell is pointing at
 	// value would be profile or empty if pointing to the user's host.
 	MinikubeActivePodmanEnv = "MINIKUBE_ACTIVE_PODMAN"
@@ -75,6 +79,23 @@ const (
 	MinikubeForceSystemdEnv = "MINIKUBE_FORCE_SYSTEMD"
 	// TestDiskUsedEnv is used in integration tests for insufficient storage with 'minikube status'
 	TestDiskUsedEnv = "MINIKUBE_TEST_STORAGE_CAPACITY"
+
+	// scheduled stop constants
+	ScheduledStopEnvFile        = "/var/lib/minikube/scheduled-stop/environment"
+	ScheduledStopSystemdService = "minikube-scheduled-stop"
+
+	// MinikubeExistingPrefix is used to save the original environment when executing docker-env
+	MinikubeExistingPrefix = "MINIKUBE_EXISTING_"
+
+	// ExistingDockerHostEnv is used to save original docker environment
+	ExistingDockerHostEnv = MinikubeExistingPrefix + "DOCKER_HOST"
+	// ExistingDockerCertPathEnv is used to save original docker environment
+	ExistingDockerCertPathEnv = MinikubeExistingPrefix + "DOCKER_CERT_PATH"
+	// ExistingDockerTLSVerifyEnv is used to save original docker environment
+	ExistingDockerTLSVerifyEnv = MinikubeExistingPrefix + "DOCKER_TLS_VERIFY"
+
+	// ExistingContainerHostEnv is used to save original podman environment
+	ExistingContainerHostEnv = MinikubeExistingPrefix + "CONTAINER_HOST"
 )
 
 var (
@@ -90,8 +111,11 @@ var (
 
 	// DockerDaemonEnvs is list of docker-daemon related environment variables.
 	DockerDaemonEnvs = [3]string{DockerHostEnv, DockerTLSVerifyEnv, DockerCertPathEnv}
+	// ExistingDockerDaemonEnvs is list of docker-daemon related environment variables.
+	ExistingDockerDaemonEnvs = [3]string{ExistingDockerHostEnv, ExistingDockerTLSVerifyEnv, ExistingDockerCertPathEnv}
+
 	// PodmanRemoteEnvs is list of podman-remote related environment variables.
-	PodmanRemoteEnvs = [1]string{PodmanVarlinkBridgeEnv}
+	PodmanRemoteEnvs = [2]string{PodmanVarlinkBridgeEnv, PodmanContainerHostEnv}
 
 	// DefaultMinipath is the default minikube path (under the home directory)
 	DefaultMinipath = filepath.Join(homedir.HomeDir(), ".minikube")

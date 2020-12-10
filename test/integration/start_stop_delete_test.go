@@ -110,7 +110,7 @@ func TestStartStop(t *testing.T) {
 						{"UserAppExistsAfterStop", validateAppExistsAfterStop},
 						{"AddonExistsAfterStop", validateAddonAfterStop},
 						{"VerifyKubernetesImages", validateKubernetesImages},
-						{"Pause", validatePauseAfterSart},
+						{"Pause", validatePauseAfterStart},
 					}
 					for _, stc := range serialTests {
 						if ctx.Err() == context.DeadlineExceeded {
@@ -233,7 +233,7 @@ func validateKubernetesImages(ctx context.Context, t *testing.T, profile string,
 	}
 }
 
-func validatePauseAfterSart(ctx context.Context, t *testing.T, profile string, tcName string, tcVersion string, startArgs []string) {
+func validatePauseAfterStart(ctx context.Context, t *testing.T, profile string, tcName string, tcVersion string, startArgs []string) {
 	defer PostMortemLogs(t, profile)
 	testPause(ctx, t, profile)
 }
@@ -293,9 +293,7 @@ func testPulledImages(ctx context.Context, t *testing.T, profile string, version
 	found := map[string]bool{}
 	for _, img := range jv["images"] {
 		for _, i := range img.Tags {
-			// Remove container-specific prefixes for naming consistency
-			i = strings.TrimPrefix(i, "docker.io/")
-			i = strings.TrimPrefix(i, "localhost/")
+			i = trimImageName(i)
 			if defaultImage(i) {
 				found[i] = true
 			} else {
@@ -303,18 +301,32 @@ func testPulledImages(ctx context.Context, t *testing.T, profile string, version
 			}
 		}
 	}
-	want, err := images.Kubeadm("", version)
+	wantRaw, err := images.Kubeadm("", version)
 	if err != nil {
 		t.Errorf("failed to get kubeadm images for %s : %v", version, err)
 	}
+	// we need to trim the want raw, because if runtime is docker it will not report the full name with docker.io as prefix
+	want := []string{}
+	for _, i := range wantRaw {
+		want = append(want, trimImageName(i))
+	}
+
 	gotImages := []string{}
 	for k := range found {
 		gotImages = append(gotImages, k)
 	}
 	sort.Strings(want)
 	sort.Strings(gotImages)
-	if diff := cmp.Diff(want, gotImages); diff != "" {
-		t.Errorf("%s images mismatch (-want +got):\n%s", version, diff)
+	// check if we got all the images we want, ignoring any extraneous ones in cache (eg, may be created by other tests)
+	missing := false
+	for _, img := range want {
+		if sort.SearchStrings(gotImages, img) == len(gotImages) {
+			missing = true
+			break
+		}
+	}
+	if missing {
+		t.Errorf("%s images missing (-want +got):\n%s", version, cmp.Diff(want, gotImages))
 	}
 }
 
@@ -353,6 +365,19 @@ func testPause(ctx context.Context, t *testing.T, profile string) {
 		t.Errorf("post-unpause kubelet status = %q; want = %q", got, state.Running)
 	}
 
+}
+
+// Remove container-specific prefixes for naming consistency
+// for example in `docker` runtime we get this:
+// 		$ docker@minikube:~$ sudo crictl images -o json | grep dash
+// 	         "kubernetesui/dashboard:v2.0.3"
+// but for 'containerd' we get full name
+// 		$ docker@minikube:~$  sudo crictl images -o json | grep dash
+//        	 "docker.io/kubernetesui/dashboard:v2.0.3"
+func trimImageName(name string) string {
+	name = strings.TrimPrefix(name, "docker.io/")
+	name = strings.TrimPrefix(name, "localhost/")
+	return name
 }
 
 // defaultImage returns true if this image is expected in a default minikube install

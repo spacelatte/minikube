@@ -13,14 +13,8 @@ Enable or disable a minikube addon
 
 addons modifies minikube addons files using subcommands like "minikube addons enable dashboard"
 
-```
+```shell
 minikube addons SUBCOMMAND [flags]
-```
-
-### Options
-
-```
-  -h, --help   help for addons
 ```
 
 ### Options inherited from parent commands
@@ -29,11 +23,13 @@ minikube addons SUBCOMMAND [flags]
       --add_dir_header                   If true, adds the file directory to the header of the log messages
       --alsologtostderr                  log to standard error as well as files
   -b, --bootstrapper string              The name of the cluster bootstrapper that will set up the Kubernetes cluster. (default "kubeadm")
+  -h, --help                             
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --log_file string                  If non-empty, use this log file
       --log_file_max_size uint           Defines the maximum size a log file can grow to. Unit is megabytes. If the value is 0, the maximum file size is unlimited. (default 1800)
       --logtostderr                      log to standard error instead of files
+      --one_output                       If true, only write logs to their native severity level (vs also writing to each lower severity level
   -p, --profile string                   The name of the minikube VM being used. This can be set to allow having multiple instances of minikube independently. (default "minikube")
       --skip_headers                     If true, avoid header prefixes in the log messages
       --skip_log_headers                 If true, avoid headers when opening log files
@@ -50,14 +46,8 @@ Configures the addon w/ADDON_NAME within minikube (example: minikube addons conf
 
 Configures the addon w/ADDON_NAME within minikube (example: minikube addons configure registry-creds). For a list of available addons use: minikube addons list
 
-```
+```shell
 minikube addons configure ADDON_NAME [flags]
-```
-
-### Options
-
-```
-  -h, --help   help for configure
 ```
 
 ### Options inherited from parent commands
@@ -66,11 +56,13 @@ minikube addons configure ADDON_NAME [flags]
       --add_dir_header                   If true, adds the file directory to the header of the log messages
       --alsologtostderr                  log to standard error as well as files
   -b, --bootstrapper string              The name of the cluster bootstrapper that will set up the Kubernetes cluster. (default "kubeadm")
+  -h, --help                             
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --log_file string                  If non-empty, use this log file
       --log_file_max_size uint           Defines the maximum size a log file can grow to. Unit is megabytes. If the value is 0, the maximum file size is unlimited. (default 1800)
       --logtostderr                      log to standard error instead of files
+      --one_output                       If true, only write logs to their native severity level (vs also writing to each lower severity level
   -p, --profile string                   The name of the minikube VM being used. This can be set to allow having multiple instances of minikube independently. (default "minikube")
       --skip_headers                     If true, avoid header prefixes in the log messages
       --skip_log_headers                 If true, avoid headers when opening log files
@@ -87,14 +79,8 @@ Disables the addon w/ADDON_NAME within minikube (example: minikube addons disabl
 
 Disables the addon w/ADDON_NAME within minikube (example: minikube addons disable dashboard). For a list of available addons use: minikube addons list 
 
-```
+```shell
 minikube addons disable ADDON_NAME [flags]
-```
-
-### Options
-
-```
-  -h, --help   help for disable
 ```
 
 ### Options inherited from parent commands
@@ -103,11 +89,13 @@ minikube addons disable ADDON_NAME [flags]
       --add_dir_header                   If true, adds the file directory to the header of the log messages
       --alsologtostderr                  log to standard error as well as files
   -b, --bootstrapper string              The name of the cluster bootstrapper that will set up the Kubernetes cluster. (default "kubeadm")
+  -h, --help                             
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --log_file string                  If non-empty, use this log file
       --log_file_max_size uint           Defines the maximum size a log file can grow to. Unit is megabytes. If the value is 0, the maximum file size is unlimited. (default 1800)
       --logtostderr                      log to standard error instead of files
+      --one_output                       If true, only write logs to their native severity level (vs also writing to each lower severity level
   -p, --profile string                   The name of the minikube VM being used. This can be set to allow having multiple instances of minikube independently. (default "minikube")
       --skip_headers                     If true, avoid header prefixes in the log messages
       --skip_log_headers                 If true, avoid headers when opening log files
@@ -124,14 +112,8 @@ Enables the addon w/ADDON_NAME within minikube (example: minikube addons enable 
 
 Enables the addon w/ADDON_NAME within minikube (example: minikube addons enable dashboard). For a list of available addons use: minikube addons list 
 
-```
+```shell
 minikube addons enable ADDON_NAME [flags]
-```
-
-### Options
-
-```
-  -h, --help   help for enable
 ```
 
 ### Options inherited from parent commands
@@ -140,11 +122,13 @@ minikube addons enable ADDON_NAME [flags]
       --add_dir_header                   If true, adds the file directory to the header of the log messages
       --alsologtostderr                  log to standard error as well as files
   -b, --bootstrapper string              The name of the cluster bootstrapper that will set up the Kubernetes cluster. (default "kubeadm")
+  -h, --help                             
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --log_file string                  If non-empty, use this log file
       --log_file_max_size uint           Defines the maximum size a log file can grow to. Unit is megabytes. If the value is 0, the maximum file size is unlimited. (default 1800)
       --logtostderr                      log to standard error instead of files
+      --one_output                       If true, only write logs to their native severity level (vs also writing to each lower severity level
   -p, --profile string                   The name of the minikube VM being used. This can be set to allow having multiple instances of minikube independently. (default "minikube")
       --skip_headers                     If true, avoid header prefixes in the log messages
       --skip_log_headers                 If true, avoid headers when opening log files
@@ -162,14 +146,8 @@ Help about any command
 Help provides help for any command in the application.
 Simply type addons help [path to command] for full details.
 
-```
+```shell
 minikube addons help [command] [flags]
-```
-
-### Options
-
-```
-  -h, --help   help for help
 ```
 
 ### Options inherited from parent commands
@@ -178,11 +156,13 @@ minikube addons help [command] [flags]
       --add_dir_header                   If true, adds the file directory to the header of the log messages
       --alsologtostderr                  log to standard error as well as files
   -b, --bootstrapper string              The name of the cluster bootstrapper that will set up the Kubernetes cluster. (default "kubeadm")
+  -h, --help                             
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --log_file string                  If non-empty, use this log file
       --log_file_max_size uint           Defines the maximum size a log file can grow to. Unit is megabytes. If the value is 0, the maximum file size is unlimited. (default 1800)
       --logtostderr                      log to standard error instead of files
+      --one_output                       If true, only write logs to their native severity level (vs also writing to each lower severity level
   -p, --profile string                   The name of the minikube VM being used. This can be set to allow having multiple instances of minikube independently. (default "minikube")
       --skip_headers                     If true, avoid header prefixes in the log messages
       --skip_log_headers                 If true, avoid headers when opening log files
@@ -199,14 +179,13 @@ Lists all available minikube addons as well as their current statuses (enabled/d
 
 Lists all available minikube addons as well as their current statuses (enabled/disabled)
 
-```
+```shell
 minikube addons list [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help            help for list
   -o, --output string   minikube addons list --output OUTPUT. json, list (default "list")
 ```
 
@@ -216,11 +195,13 @@ minikube addons list [flags]
       --add_dir_header                   If true, adds the file directory to the header of the log messages
       --alsologtostderr                  log to standard error as well as files
   -b, --bootstrapper string              The name of the cluster bootstrapper that will set up the Kubernetes cluster. (default "kubeadm")
+  -h, --help                             
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --log_file string                  If non-empty, use this log file
       --log_file_max_size uint           Defines the maximum size a log file can grow to. Unit is megabytes. If the value is 0, the maximum file size is unlimited. (default 1800)
       --logtostderr                      log to standard error instead of files
+      --one_output                       If true, only write logs to their native severity level (vs also writing to each lower severity level
   -p, --profile string                   The name of the minikube VM being used. This can be set to allow having multiple instances of minikube independently. (default "minikube")
       --skip_headers                     If true, avoid header prefixes in the log messages
       --skip_log_headers                 If true, avoid headers when opening log files
@@ -237,7 +218,7 @@ Opens the addon w/ADDON_NAME within minikube (example: minikube addons open dash
 
 Opens the addon w/ADDON_NAME within minikube (example: minikube addons open dashboard). For a list of available addons use: minikube addons list 
 
-```
+```shell
 minikube addons open ADDON_NAME [flags]
 ```
 
@@ -245,7 +226,6 @@ minikube addons open ADDON_NAME [flags]
 
 ```
       --format string   Format to output addons URL in.  This format will be applied to each url individually and they will be printed one at a time. (default "http://{{.IP}}:{{.Port}}")
-  -h, --help            help for open
       --https           Open the addons URL with https instead of http
       --interval int    The time interval for each check that wait performs in seconds (default 1)
       --url             Display the Kubernetes addons URL in the CLI instead of opening it in the default browser
@@ -258,11 +238,13 @@ minikube addons open ADDON_NAME [flags]
       --add_dir_header                   If true, adds the file directory to the header of the log messages
       --alsologtostderr                  log to standard error as well as files
   -b, --bootstrapper string              The name of the cluster bootstrapper that will set up the Kubernetes cluster. (default "kubeadm")
+  -h, --help                             
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --log_file string                  If non-empty, use this log file
       --log_file_max_size uint           Defines the maximum size a log file can grow to. Unit is megabytes. If the value is 0, the maximum file size is unlimited. (default 1800)
       --logtostderr                      log to standard error instead of files
+      --one_output                       If true, only write logs to their native severity level (vs also writing to each lower severity level
   -p, --profile string                   The name of the minikube VM being used. This can be set to allow having multiple instances of minikube independently. (default "minikube")
       --skip_headers                     If true, avoid header prefixes in the log messages
       --skip_log_headers                 If true, avoid headers when opening log files

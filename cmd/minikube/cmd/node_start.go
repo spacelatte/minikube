@@ -27,6 +27,7 @@ import (
 	"k8s.io/minikube/pkg/minikube/mustload"
 	"k8s.io/minikube/pkg/minikube/node"
 	"k8s.io/minikube/pkg/minikube/out"
+	"k8s.io/minikube/pkg/minikube/out/register"
 	"k8s.io/minikube/pkg/minikube/reason"
 	"k8s.io/minikube/pkg/minikube/style"
 )
@@ -50,11 +51,12 @@ var nodeStartCmd = &cobra.Command{
 
 		machineName := driver.MachineName(*cc, *n)
 		if machine.IsRunning(api, machineName) {
-			out.T(style.Check, "{{.name}} is already running", out.V{"name": name})
+			out.Step(style.Check, "{{.name}} is already running", out.V{"name": name})
 			os.Exit(0)
 		}
 
-		r, p, m, h, err := node.Provision(cc, n, false, viper.GetBool(deleteOnFailure))
+		register.Reg.SetStep(register.InitialSetup)
+		r, p, m, h, err := node.Provision(cc, n, n.ControlPlane, viper.GetBool(deleteOnFailure))
 		if err != nil {
 			exit.Error(reason.GuestNodeProvision, "provisioning host for node", err)
 		}
@@ -69,7 +71,7 @@ var nodeStartCmd = &cobra.Command{
 			ExistingAddons: nil,
 		}
 
-		_, err = node.Start(s, false)
+		_, err = node.Start(s, n.ControlPlane)
 		if err != nil {
 			_, err := maybeDeleteAndRetry(cmd, *cc, *n, nil, err)
 			if err != nil {
@@ -77,7 +79,7 @@ var nodeStartCmd = &cobra.Command{
 				exit.Error(reason.GuestNodeStart, "failed to start node", err)
 			}
 		}
-		out.T(style.Happy, "Successfully started node {{.name}}!", out.V{"name": machineName})
+		out.Step(style.Happy, "Successfully started node {{.name}}!", out.V{"name": machineName})
 	},
 }
 

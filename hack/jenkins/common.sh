@@ -21,7 +21,7 @@
 # OS_ARCH: The operating system and the architecture separated by a hyphen '-' (e.g. darwin-amd64, linux-amd64, windows-amd64)
 # VM_DRIVER: the driver to use for the test
 # EXTRA_START_ARGS: additional flags to pass into minikube start
-# EXTRA_ARGS: additional flags to pass into minikube
+# EXTRA_TEST_ARGS: additional flags to pass into go test
 # JOB_NAME: the name of the logfile and check name to update on github
 
 readonly TEST_ROOT="${HOME}/minikube-integration"
@@ -30,8 +30,16 @@ export GOPATH="$HOME/go"
 export KUBECONFIG="${TEST_HOME}/kubeconfig"
 export PATH=$PATH:"/usr/local/bin/:/usr/local/go/bin/:$GOPATH/bin"
 
+if [ "$(uname)" != "Darwin" ]; then
+  # install lsof for finding none driver procs, psmisc to use pstree in cronjobs
+  sudo apt-get -y install lsof psmisc
+fi
+
 # installing golang so we could do go get for gopogh
-sudo ./installers/check_install_golang.sh "1.14.6" "/usr/local" || true
+sudo ./installers/check_install_golang.sh "1.15.5" "/usr/local" || true
+
+# install docker and kubectl if not present
+sudo ./installers/check_install_docker.sh
 
 docker rm -f -v $(docker ps -aq) >/dev/null 2>&1 || true
 docker volume prune -f || true
@@ -47,7 +55,7 @@ echo "test home: ${TEST_HOME}"
 echo "sudo:      ${SUDO_PREFIX}"
 echo "kernel:    $(uname -v)"
 echo "uptime:    $(uptime)"
-# Setting KUBECONFIG prevents the version ceck from erroring out due to permission issues
+# Setting KUBECONFIG prevents the version check from erroring out due to permission issues
 echo "kubectl:   $(env KUBECONFIG=${TEST_HOME} kubectl version --client --short=true)"
 echo "docker:    $(docker version --format '{{ .Client.Version }}')"
 echo "podman:    $(sudo podman version --format '{{.Version}}' || true)"
@@ -211,18 +219,19 @@ if [[ "${kprocs}" != "" ]]; then
   sudo -E kill ${kprocs} || true
 fi
 
+
 # clean up none drivers binding on 8443
-  none_procs=$(sudo lsof -i :8443 | tail -n +2 | awk '{print $2}' || true)
-  if [[ "${none_procs}" != "" ]]; then
-    echo "Found stale api servers listening on 8443 processes to kill: "
-    for p in $none_procs
-    do
+none_procs=$(sudo lsof -i :8443 | tail -n +2 | awk '{print $2}' || true)
+if [[ "${none_procs}" != "" ]]; then
+  echo "Found stale api servers listening on 8443 processes to kill: "
+  for p in $none_procs
+  do
     echo "Kiling stale none driver:  $p"
     sudo -E ps -f -p $p || true
     sudo -E kill $p || true
     sudo -E kill -9 $p || true
-    done
-  fi
+  done
+fi
 
 function cleanup_stale_routes() {
   local show="netstat -rn -f inet"
@@ -338,9 +347,9 @@ fi
 
 echo ">> Installing gopogh"
 if [ "$(uname)" != "Darwin" ]; then
-  curl -LO https://github.com/medyagh/gopogh/releases/download/v0.2.4/gopogh-linux-amd64 && sudo install gopogh-linux-amd64 /usr/local/bin/gopogh
+  curl -LO https://github.com/medyagh/gopogh/releases/download/v0.3.0/gopogh-linux-amd64 && sudo install gopogh-linux-amd64 /usr/local/bin/gopogh
 else
-  curl -LO https://github.com/medyagh/gopogh/releases/download/v0.2.4/gopogh-darwin-amd64 && sudo install gopogh-darwin-amd64 /usr/local/bin/gopogh
+  curl -LO https://github.com/medyagh/gopogh/releases/download/v0.3.0/gopogh-darwin-amd64 && sudo install gopogh-darwin-amd64 /usr/local/bin/gopogh
 fi
 
 echo ">> Running gopogh"
