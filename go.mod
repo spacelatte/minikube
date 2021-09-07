@@ -21,7 +21,6 @@ require (
 	github.com/docker/machine v0.7.1-0.20190902101342-b170508bf44c // v0.16.2^
 	github.com/elazarl/goproxy v0.0.0-20190421051319-9d40249d3c2f
 	github.com/elazarl/goproxy/ext v0.0.0-20190421051319-9d40249d3c2f // indirect
-	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3
 	github.com/google/go-cmp v0.4.1
@@ -71,12 +70,12 @@ require (
 	github.com/xeipuuv/gojsonschema v0.0.0-20180618132009-1d523034197f
 	github.com/zchee/go-vmnet v0.0.0-20161021174912-97ebf9174097
 	golang.org/x/build v0.0.0-20190927031335-2835ba2e683f
-	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/sys v0.0.0-20200523222454-059865788121
-	golang.org/x/text v0.3.2
+	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
+	golang.org/x/sys v0.0.0-20201112073958-5cba982894dd
+	golang.org/x/text v0.3.3
 	google.golang.org/api v0.25.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/yaml.v2 v2.3.0
@@ -86,7 +85,7 @@ require (
 	k8s.io/client-go v0.17.4
 	k8s.io/klog/v2 v2.3.0
 	k8s.io/kubectl v0.0.0
-	k8s.io/kubernetes v1.18.5
+	k8s.io/kubernetes v1.18.19
 	sigs.k8s.io/sig-storage-lib-external-provisioner v4.0.0+incompatible // indirect
 	sigs.k8s.io/sig-storage-lib-external-provisioner/v5 v5.0.0
 )
